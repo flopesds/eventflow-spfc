@@ -1,7 +1,7 @@
 # EventFlow SPFC 🇾🇪 | Gestão de Eventos & Matchday Ops
 
 <p align="center">
-  <img src="public/spfc-logo.png" alt="São Paulo FC" width="100" />
+  <img src="public/spfc-logo-outline.png" alt="São Paulo FC" width="100" />
 </p>
 
 <p align="center">
