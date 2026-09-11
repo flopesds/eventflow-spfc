@@ -1,0 +1,98 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Event {
+  id              String          @id @default(cuid())
+  name            String
+  type            EventType
+  date            DateTime
+  venue           String
+  sponsorId       String?
+  sponsor         Sponsor?        @relation(fields: [sponsorId], references: [id])
+  status          EventStatus     @default(PLANEJADO)
+  budgetEstimated Decimal?
+  budgetReal      Decimal?
+  checklistItems  ChecklistItem[]
+  vendors         EventVendor[]
+  proofs          Proof[]
+  createdAt       DateTime        @default(now())
+  updatedAt       DateTime        @updatedAt
+}
+
+enum EventType {
+  JOGO
+  ATIVACAO_PATROCINADOR
+  EVENTO_TORCEDOR
+  OUTRO
+}
+
+enum EventStatus {
+  PLANEJADO
+  EM_EXECUCAO
+  CONCLUIDO
+  CANCELADO
+}
+
+model ChecklistItem {
+  id          String          @id @default(cuid())
+  eventId     String
+  event       Event           @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  description String
+  responsible String
+  dueDate     DateTime
+  status      ChecklistStatus @default(PENDENTE)
+  completedAt DateTime?
+}
+
+enum ChecklistStatus {
+  PENDENTE
+  EM_ANDAMENTO
+  CONCLUIDO
+  ATRASADO
+}
+
+model Vendor {
+  id       String        @id @default(cuid())
+  name     String
+  category String
+  contact  String?
+  events   EventVendor[]
+}
+
+model EventVendor {
+  id            String   @id @default(cuid())
+  eventId       String
+  event         Event    @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  vendorId      String
+  vendor        Vendor   @relation(fields: [vendorId], references: [id], onDelete: Cascade)
+  costEstimated Decimal?
+  costReal      Decimal?
+}
+
+model Proof {
+  id          String      @id @default(cuid())
+  eventId     String
+  event       Event       @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  fileUrl     String
+  status      ProofStatus @default(PENDENTE)
+  submittedAt DateTime?
+  validatedAt DateTime?
+}
+
+enum ProofStatus {
+  PENDENTE
+  ENVIADO
+  VALIDADO
+}
+
+model Sponsor {
+  id     String  @id @default(cuid())
+  name   String
+  events Event[]
+}
